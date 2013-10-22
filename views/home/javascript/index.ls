@@ -148,7 +148,7 @@ set-val $('footer input[data-value=xMax]').attr('min', (conversionRate)*1000).at
 
 # footer inputs event handlers
 
-$('footer input').on 'change', $.throttle(500, true, ->
+$('footer input').on 'change', $.throttle(500, false, ->
 	$this = $(this)
 	value = $(this).val()
 	$this.attr('data-last', value)

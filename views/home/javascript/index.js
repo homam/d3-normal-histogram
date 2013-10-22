@@ -199,7 +199,7 @@
         return it / 1000;
       })(round.apply(this, arguments));
     });
-    $('footer input').on('change', $.throttle(500, true, function(){
+    $('footer input').on('change', $.throttle(500, false, function(){
       var $this, value;
       $this = $(this);
       value = $(this).val();
