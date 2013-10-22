@@ -61,21 +61,19 @@ add-line 'ciRight', '#FFCC00'
 add-line 'ciLeft', '#FFCC00'
 
 
-render = (sampleSize, repeats, numberOfBins, xMax, callback) ->
+render = (sampleSize, repeats, numberOfBins, xMax, callback = $.noop) ->
 
+	# parallel
 	sampled <- new Parallel([rdata, sampleSize, repeats]).spawn(([input, size, repeats]) ->
 		floor = Math.floor
 		random = Math.random
-		map = (f, arr) -> arr.map(f)
-		filter = (f, arr) -> arr.filter(f)
-		conversion = (ds) -> 
-			cs = (filter (->it), ds)
-			cs.length / ds.length
-		sample = (ds) -> map (-> ds[it]), [floor(random! * ds.length) for i in [1 to size]]
+		conversion = (ds) -> ds.filter(-> it).length / ds.length
+		sample = (ds) -> [floor(random! * ds.length) for i in [1 to size]].map(-> ds[it])
 
 		[conversion(sample input) for i in [1 to repeats]]
 	).then
 
+	# synchronous and pettier
 	#sampled = [(conversion . sample sampleSize) rdata for i in [1 to repeats]]
 
 	ci = sqrt(conversionRate * (1 - conversionRate) / sampleSize)
@@ -86,7 +84,7 @@ render = (sampleSize, repeats, numberOfBins, xMax, callback) ->
 
 	data = d3.layout.histogram().bins(x.ticks(numberOfBins)) sampled
 
-	y = d3.scale.linear().domain([0, d3.max data, (.y)]).range([height,0])
+	y = d3.scale.linear().domain([0, (d3.max data, (.y))]).range([height,0])
 
 
 	# mu line
@@ -115,12 +113,12 @@ render = (sampleSize, repeats, numberOfBins, xMax, callback) ->
 	xAxis = d3.svg.axis().scale(x).orient('bottom').tickFormat(d3.format '.2%')
 	$svg.selectAll('.x.axis').transition().duration(500).call(xAxis)
 
-	yAxis = d3.svg.axis().scale(y).orient('left').tickFormat( -> it + '%')
+	yAxis = d3.svg.axis().scale(y).orient('left').tickFormat(-> (d3.format '%') (it/repeats))
 	$svg.selectAll('.y.axis').transition().duration(500).call(yAxis)
 
 	callback!
 
-render-input = (callback) ->
+render-input = (callback = $.noop) ->
 	render parseInt($('footer input[data-value=sampleSize]').val()),
 	parseInt($('footer input[data-value=repeats]').val()),
 	parseInt($('footer input[data-value=numberOfBins]').val()),
@@ -139,22 +137,21 @@ $divEtner = d3.select('footer').selectAll('div').data(['sampleSize', 'repeats', 
 set-val = ($t, v, f = id) -> 
 	$t.val(v)
 	$t.attr('data-last', v)
-	$t.parent().find('span').text(f(v))
+	$t.parent().find('span').text(f v)
+	$t.on 'change', $.throttle(500, false, ->
+		$this = $(this)
+		value = $this.val() 
+		$this.parent().find('span').text(f value)
+		render-input!
+	)
+
 
 set-val $('footer input[data-value=sampleSize]').attr('min', raw.length * 0.0001).attr('max', raw.length * 0.01), (raw.length * 0.001)
 set-val $('footer input[data-value=repeats]').attr('min', 10).attr('max', 5000), (100)
 set-val $('footer input[data-value=numberOfBins]').attr('min', 5).attr('max', 40), (20)
-set-val $('footer input[data-value=xMax]').attr('min', (conversionRate)*1000).attr('max', (conversionRate)*3*1000), ((conversionRate)*2*1000), (/1000) . round
+set-val $('footer input[data-value=xMax]').attr('min', (conversionRate)*1000).attr('max', (conversionRate)*3*1000), ((conversionRate)*2*1000), (d3.format '.2%') . (/1000)
 
 # footer inputs event handlers
 
-$('footer input').on 'change', $.throttle(500, false, ->
-	$this = $(this)
-	value = $(this).val()
-	$this.attr('data-last', value)
-	$this.parent().find('span').text(value)
-	_ <- render-input
-	)
-
 # draw it!
-_ <- render-input
+render-input!

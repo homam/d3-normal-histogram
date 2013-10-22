@@ -77,29 +77,20 @@
     addLine('ciRight', '#FFCC00');
     addLine('ciLeft', '#FFCC00');
     render = function(sampleSize, repeats, numberOfBins, xMax, callback){
+      callback == null && (callback = $.noop);
       return new Parallel([rdata, sampleSize, repeats]).spawn(function(arg$){
-        var input, size, repeats, floor, random, map, filter, conversion, sample, i$, ref$, len$, i, results$ = [];
+        var input, size, repeats, floor, random, conversion, sample, i$, ref$, len$, i, results$ = [];
         input = arg$[0], size = arg$[1], repeats = arg$[2];
         floor = Math.floor;
         random = Math.random;
-        map = function(f, arr){
-          return arr.map(f);
-        };
-        filter = function(f, arr){
-          return arr.filter(f);
-        };
         conversion = function(ds){
-          var cs;
-          cs = filter(function(it){
+          return ds.filter(function(it){
             return it;
-          }, ds);
-          return cs.length / ds.length;
+          }).length / ds.length;
         };
         sample = function(ds){
           var i;
-          return map(function(it){
-            return ds[it];
-          }, (function(){
+          return (function(){
             var i$, ref$, len$, results$ = [];
             for (i$ = 0, len$ = (ref$ = (fn$())).length; i$ < len$; ++i$) {
               i = ref$[i$];
@@ -113,7 +104,9 @@
               }
               return results$;
             }
-          }()));
+          }()).map(function(it){
+            return ds[it];
+          });
         };
         for (i$ = 0, len$ = (ref$ = (fn$())).length; i$ < len$; ++i$) {
           i = ref$[i$];
@@ -162,13 +155,14 @@
         xAxis = d3.svg.axis().scale(x).orient('bottom').tickFormat(d3.format('.2%'));
         $svg.selectAll('.x.axis').transition().duration(500).call(xAxis);
         yAxis = d3.svg.axis().scale(y).orient('left').tickFormat(function(it){
-          return it + '%';
+          return d3.format('%')(it / repeats);
         });
         $svg.selectAll('.y.axis').transition().duration(500).call(yAxis);
         return callback();
       });
     };
     renderInput = function(callback){
+      callback == null && (callback = $.noop);
       return render(parseInt($('footer input[data-value=sampleSize]').val()), parseInt($('footer input[data-value=repeats]').val()), parseInt($('footer input[data-value=numberOfBins]').val()), parseFloat($('footer input[data-value=xMax]').val() / 1000), callback);
     };
     x$ = $divEtner = d3.select('footer').selectAll('div').data(['sampleSize', 'repeats', 'numberOfBins', 'xMax']).enter().append('div');
@@ -189,25 +183,24 @@
       f == null && (f = id);
       $t.val(v);
       $t.attr('data-last', v);
-      return $t.parent().find('span').text(f(v));
+      $t.parent().find('span').text(f(v));
+      return $t.on('change', $.throttle(500, false, function(){
+        var $this, value;
+        $this = $(this);
+        value = $this.val();
+        $this.parent().find('span').text(f(value));
+        return renderInput();
+      }));
     };
     setVal($('footer input[data-value=sampleSize]').attr('min', raw.length * 0.0001).attr('max', raw.length * 0.01), raw.length * 0.001);
     setVal($('footer input[data-value=repeats]').attr('min', 10).attr('max', 5000), 100);
     setVal($('footer input[data-value=numberOfBins]').attr('min', 5).attr('max', 40), 20);
     setVal($('footer input[data-value=xMax]').attr('min', conversionRate * 1000).attr('max', conversionRate * 3 * 1000), conversionRate * 2 * 1000, function(){
-      return (function(it){
+      return d3.format('.2%')((function(it){
         return it / 1000;
-      })(round.apply(this, arguments));
+      }).apply(this, arguments));
     });
-    $('footer input').on('change', $.throttle(500, false, function(){
-      var $this, value;
-      $this = $(this);
-      value = $(this).val();
-      $this.attr('data-last', value);
-      $this.parent().find('span').text(value);
-      return renderInput(function(_){});
-    }));
-    return renderInput(function(_){});
+    return renderInput();
   });
   function curry$(f, bound){
     var context,
