@@ -1,0 +1,415 @@
+@import 'nib'
+
+*
+	outline: none;
+
+body
+	font-family: 'Segoe UI',Tahoma,Helvetica,sans-serif;
+	font-weight: normal;
+	font-size: 12px;
+
+button {
+	display: inline-block;
+	background: #f7f7f7;
+	border: 1px solid #aaa;
+	padding: 5px 20px;
+	color: #444;
+	border-radius: 3px;
+	box-shadow: 0 1px 3px #ddd;
+	transition: 0.2s linear;
+}
+
+button:hover {
+	background: #fefefe;
+	box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+	border: 1px solid #aaa;
+}
+
+button:active {
+	background: #f3f3f3;
+	box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.2);
+}
+
+.dialog 
+	position: fixed;
+	display: none;
+	top: 0;
+	left: 0;
+	right: 0;
+	bottom: 0;
+	z-index: 10;
+	margin: 0;
+	padding: 0;
+	background-color: rgba(0,0,0,0.75);
+	opacity: 0;
+	transition: 0.5s linear;
+	color: #333;
+
+	&.visible
+		opacity: 1;
+
+	.step
+		display:none;
+
+	.step-1
+		display:block;
+
+	.dialog-inside
+		position: absolute;
+		width: 500px;
+		height: 400px;
+		left: 50%;
+		top: 50%;
+		margin-left: -250px;
+		margin-top: -200px;
+		padding: 20px;
+		border-radius: 5px;
+		box-shadow: 0 5px 10px rgba(0,0,0,0.5), inset 0 0 1px rgba(255,255,255,0.25);
+		background: linear-gradient(to bottom, #eee 0%,#ddd 100%);
+
+		.dialog-close
+			position: absolute;
+			width: 10px;
+			height: 10px;
+			top: 27px;
+			right: 20px;
+			cursor: pointer;
+			margin: 0;
+			padding: 5px;
+			font-size: 16px;
+			line-height: 5px;
+			text-align: center;
+			border-radius: 10px;
+			color: #fff;
+			background-color: #e65c5c;
+			box-shadow 0 1px 0 rgba(255,255,255,0.75)
+
+		h3
+			font-size: 20px;
+			margin: 0 0 20px 0;
+			padding-bottom: 10px;
+			font-weight: normal;
+			text-transform: uppercase;
+			border-bottom:  1px solid #999;
+
+		button
+			padding: 10px 20px;
+
+
+	value-wurflID()
+		margin: 0 0 15px 0;
+		font-size: 15px;
+
+	&#create-a-test-dialog
+
+		.wurflId
+			value-wurflID()
+
+		select
+			width: auto;
+
+		.select2-container
+			display: block;
+			margin-bottom: 20px;
+
+	&#conclude-a-test-dialog
+
+		.wurflId
+			value-wurflID()
+
+		ol.methods
+			-webkit-margin-before: 1em;
+			margin-before: 1em;
+			-webkit-margin-after: 1em;
+			margin-after: 1em;
+			-webkit-margin-start: 0px;
+			margin-start: 0px;
+			-webkit-margin-end: 0px;
+			margin-end: 0px;
+			-webkit-padding-start: 20px;
+			padding-start: 20px;
+
+			> li
+				cursor: pointer;
+				margin: 0;
+				padding: 8px 0;
+				color: #333;
+				border-bottom: 1px solid #bbb;
+				box-shadow: 0 1px 0 #ddd;
+
+				> span
+					display: inline-block;
+					margin: 0 10px;
+					width: 50px;
+
+					&.method
+						font-weight: bold;
+						width: 150px;
+						margin-left: 10px;
+
+					&.close
+						position: absolute;
+						right: 20px;
+						width: 10px;
+						height: 10px;
+						border: 1px solid #666;
+						text-align: right;
+						line-height: 8px;
+						margin: 0;
+						padding: 2px;
+						border-radius: 10px;
+
+			> li:last-child
+				border: none;
+				box-shadow: none;
+
+// Conclude a Test
+body.dragging, body.dragging * {
+  cursor: move !important;
+}
+
+.dragged {
+  position: absolute;
+  opacity: 0.5;
+  z-index: 2000;
+}
+
+ol.methods li.placeholder {
+  position: relative;
+  background: linear-gradient(to right, rgba(255,255,255,0) 0%,rgba(255,255,255,0.5) 25%,rgba(255,255,255,0.5) 40%,rgba(255,255,255,0.5) 60%,rgba(255,255,255,0.5) 75%,rgba(255,255,255,0) 100%);
+}
+
+ol.methodss li.placeholder:before {
+  position: absolute;
+  /** Define arrowhead **/
+}			
+
+header
+	position: fixed
+	top: 0;
+	left: 0;
+	right: 0;
+	width: 100%;
+	margin: 0;
+	//height: 65px;
+	//padding: 5px;
+	padding: 10px;
+	z-index: 2;
+	background: linear-gradient(to bottom, #f8f9f8 0%,#e4e3e3 100%);
+	border-bottom: 1px solid #aaa;
+	box-shadow: 0 2px 2px rgba(0,0,0,0.15);
+
+	> div:first-child
+		margin-bottom: 5px;
+
+	input[type=date]
+		width: 140px;
+		height: 22px;
+
+	input[type=text]
+		position: relative;
+		top: 2px;
+		margin: 0;
+		padding: 5px;
+		height: 15px;
+
+	#chosen-tests
+		width: 160px;
+	#chosen-superCampaigns
+		width: 210px;
+	#chosen-refs
+		width: 120px;
+	#go
+		position: relative;
+		top: 1px;
+		margin: 0;
+		//background-color: #c1f88c;
+		background: linear-gradient(to bottom, #53d54d 0%, #48bb43 100%);
+		color: #fff;
+		border: 1px solid #1f6f1b;
+
+		&:hover
+			background: linear-gradient(to bottom, #58e152 0%, #4cc747 100%);
+
+		&:Active
+			background: linear-gradient(to bottom, #4fc84a 0%, #43ae3f 100%);
+
+	#chosen-methods
+		width: 400px;
+	#chosen-tree-ui-type
+		width: 120px;
+	#kill-children-threshold
+		width: 65px;
+	#s2id_chosen-tree-ui-type
+		width: 160px;
+	#chosen-methods-orand
+		position: relative;
+		top: 5px;
+	#chosen-methods-orand + label
+		position: relative;
+		top 3px;
+
+
+#loading
+	position: fixed
+	top: 75px;
+	bottom: 0;
+	left: 0;
+	right: 0;
+	z-index: 3;
+	opacity: 0;
+	background-color: rgba(0,0,0,0.75);
+	color: rgba(255,255,255,1);
+	font-size: 75px;
+	text-transform: capitalize;
+	text-align: center;
+	padding-top: 333px;
+	text-shadow: 0 3px 0 rgba(0,0,0,0.5);
+	transition: .5s;
+
+	&.visible
+		opacity: 1;
+
+
+.tree
+	position: fixed;
+	//top: 75px;
+	top: 87px;
+	bottom: 100px;
+	left: 0;
+	right: 0;
+	margin: 0;
+	padding: 10px;
+	overflow: auto;
+	z-index: 1;
+	border-bottom: 1px solid #aaa;
+	box-shadow: inset 0 -2px 2px rgba(0,0,0,0.15);
+	/*source http://www.cssmatic.com/noise-texture*/
+	background: url('http://api.thumbr.it/whitenoise-200x200.png?background=ffffff00&noise=cccccc&density=100&opacity=25');
+
+	.node
+		font-size: 10px;
+
+	.node circle
+		fill: #fff;
+		stroke: steelblue;
+		stroke-width: 1.5px;
+
+	.link
+		fill: none;
+		stroke: #ccc;
+		stroke-width: 1.5px;
+
+	rect
+		fill: none;
+		stroke: #fff;
+		stroke-width: 1px;
+		&.selected
+			transition: outline 0.5s;
+			stroke: #000;
+			stroke-width: -2px;
+			outline: 5px solid rgba(0,0,0,1);
+
+	.devices-histogram
+		rect
+			stroke: black
+			fill: yellow
+
+footer
+	position: fixed;
+	bottom: 0;
+	left: 0;
+	right: 0;
+	width: 100%;
+	height: 100px
+	margin: 0;
+	padding: 0;
+	overflow: auto;
+	background-color: #222;
+
+	values-container()
+		outline: solid 1px #555;
+	value-field()
+		display: inline-block;
+		overflow: ellipsis;
+
+	.summary
+		clear: both;
+		margin: 0;
+		padding 5px 0;
+		background: linear-gradient(to bottom, #f8f9f8 0%,#e4e3e3 100%);
+
+		#create-a-test
+			margin-left: 10px;
+
+		h2
+			display: inline-block;
+			position: relative;
+			top: 4px;
+			width: 75%;
+			margin: 0 5px;
+			padding: 0 10px;
+			font-size: 14px;
+			overflow: ellipsis;
+			font-weight: normal;
+			text-transform: capitalize;
+			border-left: 1px solid #ccc;
+
+			a
+				text-decoration: none;
+				cursor: pointer;
+				color: #555;
+				text-shadow: 0 1px rgba(255,255,255,0.25);
+
+				&:hover
+					text-decoration: none;
+					color: #000;
+
+				&:first-child:before
+					padding: 0;
+					content: '';
+
+				&:before
+					padding: 0 4px;
+					content: '/';
+
+		.all-methods-summary
+			values-container()
+			position: absolute;
+			padding: 0 5px;
+			top: 7px;
+			right: 10px;
+			display: inline-block;
+			box-shadow: 0 1px 0 rgba(255,255,255,0.5);
+			background: #e4f4fc;
+			outline: none;
+			border-radius: 3px;
+			border: 1px solid #555;
+
+			> span
+				value-field()
+				margin 0 5px;
+				padding 5px 8px 3px;
+
+	ul.node-methods-stats
+		margin: 0;
+		padding: 0;
+
+		> li
+			display: inline-block;
+			width: 25%;
+			margin: 0;
+			padding: 5px 0;
+			color: #fff;
+			list-style:none;
+			values-container()
+
+			> span
+				value-field()
+				margin: 0 10px;
+				width: 40px;
+
+				&.method
+					font-weight: bold;
+					width: 100px;
+					margin-left: 10px;

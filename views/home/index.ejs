@@ -1,0 +1,102 @@
+<!doctype html>
+<html>
+    <head>
+        <title><%= title %></title>
+        <script src="javascript/libs/jquery2.js"></script>
+        <script src="javascript/libs/require.js"></script>
+        <script src="javascript/libs/d3.js"></script>
+        <script src="javascript/libs/d3-helper-tooltip.js"></script>
+        <script src="javascript/libs/select2/select2.min.js"></script>
+        <link href="javascript/libs/select2/select2.css" type="text/css" rel="Stylesheet" />
+        <script src="javascript/libs/jquery-sortable.js"></script>
+        <link href="home/style/index.css" type="text/css" rel="Stylesheet" />
+    </head>
+<body>
+
+    <div class="dialog" id="create-a-test-dialog">
+        <div class="dialog-inside">
+            <span class="dialog-close">&times;</span>
+            <div class="step step-1">
+                <h3>Create a Test</h3>
+                <div class="wurflId"></div>
+                <select id="chosen-create-test-countries" class="countries" data-placeholder="Countries" multiple></select>
+                <select id="chosen-create-test-methods" class="methods" data-placeholder="Methods" multiple></select>
+                <button class='commit'>Create this Test</button>
+            </div>
+            <div class="step step-2">
+                <h3>Test Created</h3>
+                <div class="wurflId"></div>
+                <div class="results"></div>
+            </div>
+        </div>
+    </div>
+    <div class="dialog" id="conclude-a-test-dialog">
+        <div class="dialog-inside">
+            <span class="dialog-close">&times;</span>
+            <div class="step step-1">
+                <h3>Conclude a Test</h3>
+                <div class="wurflId"></div>
+                <ol class="methods"></ol>
+                <button class='commit'>Conclude this Test</button>
+				<button class='cancel'>Cancel this Test</button>
+            </div>
+            <div class="step step-2">
+                <h3>Test Concluded!</h3>
+                <div class="wurflId"></div>
+                <div class="results"></div>
+            </div>
+        </div>
+    </div>
+
+	<header>
+		<div>
+            <select id="chosen-tests" data-placeholder="Test"></select>
+            <select id="chosen-superCampaigns" data-placeholder="Super Campaign"></select>
+            <select id="chosen-countries" class="countries" data-placeholder="Country"></select>
+            <select id="chosen-refs" data-placeholder="Ref"></select>
+            <input type="date" id="fromDate" min="2013-07-01" max="2013-10-05"/> -
+            <input type="date" id="toDate" min="2013-07-01" max="2013-10-04"/>
+			<button id='go'>Go</button>
+        </div>
+		<div>
+            <select id="chosen-tree-ui-type">
+                <option value="devices-histogram">D Histo</option>
+                <option value="tree-map">Tree Map</option>
+                <option value="tree-long-branches">Branches</option>
+            </select>
+            <input id="kill-children-threshold" type="text" value="100" />
+            <select id="chosen-methods" class="methods" data-placeholder="Methods..." multiple></select>
+            <input type="checkbox" id="chosen-methods-orand" checked />
+            <label for="chosen-methods-orand">OR</label>
+            <select id="chosen-find-wurfl-node" class="" data-placeholder="Find"></select>
+        </div>
+	</header>
+
+    <div id='loading'>
+        loading...
+    </div>
+
+    <section class="tree">
+    	
+    </section>
+
+    <footer class="stats">
+        <div class="summary">
+            <button id='create-a-test' accesskey="t">Test</button>
+            <h2></h2>
+            <div class='all-methods-summary'>
+            </div>
+        </div>
+
+    	<ul class="node-methods-stats"></ul>
+    </footer>
+
+    <script src="javascript/libs/prelude-browser-min.js"></script>
+    <script src="home/javascript/utils.js"></script>
+    <script src="home/javascript/tree-longBranches.js"></script>
+    <script src="home/javascript/tree-map-fontsize.js"></script>
+    <script src="home/javascript/tree-map.js"></script>
+    <script src="home/javascript/devices-histogram.js"></script>
+    <script src="home/javascript/index.js"></script>
+</body>
+</html>
