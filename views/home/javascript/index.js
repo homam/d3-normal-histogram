@@ -76,10 +76,8 @@
     addLine('mu', '#FD5823');
     addLine('ciRight', '#FFCC00');
     addLine('ciLeft', '#FFCC00');
-    render = function(sampleSize, repeats, numberOfBins, xMax){
-      var repeatSample;
-      repeatSample = new Parallel([rdata, sampleSize, repeats]);
-      return repeatSample.spawn(function(arg$){
+    render = function(sampleSize, repeats, numberOfBins, xMax, callback){
+      return new Parallel([rdata, sampleSize, repeats]).spawn(function(arg$){
         var input, size, repeats, floor, random, map, filter, conversion, sample, i$, ref$, len$, i, results$ = [];
         input = arg$[0], size = arg$[1], repeats = arg$[2];
         floor = Math.floor;
@@ -110,7 +108,7 @@
             return results$;
             function fn$(){
               var i$, to$, results$ = [];
-              for (i$ = 1, to$ = repeats; i$ <= to$; ++i$) {
+              for (i$ = 1, to$ = size; i$ <= to$; ++i$) {
                 results$.push(i$);
               }
               return results$;
@@ -132,7 +130,7 @@
       }).then(function(sampled){
         var ci, x, data, y, $bar, $barEnter, xAxis, yAxis;
         ci = sqrt(conversionRate * (1 - conversionRate) / sampleSize);
-        console.log('render', arguments, mean(sampled), ci);
+        console.log('render', sampleSize, repeats, mean(sampled), ci);
         x = d3.scale.linear().domain([
           0, xMax != null
             ? xMax
@@ -166,11 +164,12 @@
         yAxis = d3.svg.axis().scale(y).orient('left').tickFormat(function(it){
           return it + '%';
         });
-        return $svg.selectAll('.y.axis').transition().duration(500).call(yAxis);
+        $svg.selectAll('.y.axis').transition().duration(500).call(yAxis);
+        return callback();
       });
     };
-    renderInput = function(){
-      return render(parseInt($('footer input[data-value=sampleSize]').val()), parseInt($('footer input[data-value=repeats]').val()), parseInt($('footer input[data-value=numberOfBins]').val()), parseFloat($('footer input[data-value=xMax]').val() / 1000));
+    renderInput = function(callback){
+      return render(parseInt($('footer input[data-value=sampleSize]').val()), parseInt($('footer input[data-value=repeats]').val()), parseInt($('footer input[data-value=numberOfBins]').val()), parseFloat($('footer input[data-value=xMax]').val() / 1000), callback);
     };
     x$ = $divEtner = d3.select('footer').selectAll('div').data(['sampleSize', 'repeats', 'numberOfBins', 'xMax']).enter().append('div');
     x$.append('label').attr('for', function(it){
@@ -189,6 +188,7 @@
     setVal = function($t, v, f){
       f == null && (f = id);
       $t.val(v);
+      $t.attr('data-last', v);
       return $t.parent().find('span').text(f(v));
     };
     setVal($('footer input[data-value=sampleSize]').attr('min', raw.length * 0.0001).attr('max', raw.length * 0.01), raw.length * 0.001);
@@ -199,13 +199,15 @@
         return it / 1000;
       })(round.apply(this, arguments));
     });
-    $('footer input').on('change', function(){
-      var $this;
-      renderInput();
+    $('footer input').on('change', $.throttle(500, true, function(){
+      var $this, value;
       $this = $(this);
-      return $this.parent().find('span').text($(this).val());
-    });
-    return renderInput();
+      value = $(this).val();
+      $this.attr('data-last', value);
+      $this.parent().find('span').text(value);
+      return renderInput(function(_){});
+    }));
+    return renderInput(function(_){});
   });
   function curry$(f, bound){
     var context,

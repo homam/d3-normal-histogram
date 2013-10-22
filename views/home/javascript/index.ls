@@ -61,10 +61,9 @@ add-line 'ciRight', '#FFCC00'
 add-line 'ciLeft', '#FFCC00'
 
 
-render = (sampleSize, repeats, numberOfBins, xMax) ->
+render = (sampleSize, repeats, numberOfBins, xMax, callback) ->
 
-	repeatSample = new Parallel([rdata, sampleSize, repeats])
-	sampled <- repeatSample.spawn(([input, size, repeats]) ->
+	sampled <- new Parallel([rdata, sampleSize, repeats]).spawn(([input, size, repeats]) ->
 		floor = Math.floor
 		random = Math.random
 		map = (f, arr) -> arr.map(f)
@@ -74,8 +73,6 @@ render = (sampleSize, repeats, numberOfBins, xMax) ->
 			cs.length / ds.length
 		sample = (ds) -> map (-> ds[it]), [floor(random! * ds.length) for i in [1 to size]]
 
-		#conversion (sample input)
-
 		[conversion(sample input) for i in [1 to repeats]]
 	).then
 
@@ -83,7 +80,7 @@ render = (sampleSize, repeats, numberOfBins, xMax) ->
 
 	ci = sqrt(conversionRate * (1 - conversionRate) / sampleSize)
 
-	console.log 'render', arguments, (mean sampled), ci
+	console.log 'render', sampleSize, repeats, (mean sampled), ci
 
 	x = d3.scale.linear().domain([0, xMax ? (d3.max sampled)]).range([0, width])
 
@@ -121,13 +118,14 @@ render = (sampleSize, repeats, numberOfBins, xMax) ->
 	yAxis = d3.svg.axis().scale(y).orient('left').tickFormat( -> it + '%')
 	$svg.selectAll('.y.axis').transition().duration(500).call(yAxis)
 
+	callback!
 
-
-render-input = ->
+render-input = (callback) ->
 	render parseInt($('footer input[data-value=sampleSize]').val()),
 	parseInt($('footer input[data-value=repeats]').val()),
 	parseInt($('footer input[data-value=numberOfBins]').val()),
-	parseFloat($('footer input[data-value=xMax]').val()/1000)
+	parseFloat($('footer input[data-value=xMax]').val()/1000),
+	callback
 
 
 
@@ -140,6 +138,7 @@ $divEtner = d3.select('footer').selectAll('div').data(['sampleSize', 'repeats', 
 # footer controls default values
 set-val = ($t, v, f = id) -> 
 	$t.val(v)
+	$t.attr('data-last', v)
 	$t.parent().find('span').text(f(v))
 
 set-val $('footer input[data-value=sampleSize]').attr('min', raw.length * 0.0001).attr('max', raw.length * 0.01), (raw.length * 0.001)
@@ -148,11 +147,14 @@ set-val $('footer input[data-value=numberOfBins]').attr('min', 5).attr('max', 40
 set-val $('footer input[data-value=xMax]').attr('min', (conversionRate)*1000).attr('max', (conversionRate)*3*1000), ((conversionRate)*2*1000), (/1000) . round
 
 # footer inputs event handlers
-$('footer input').on 'change', ->
-	render-input!
-	$this = $(this)
-	$this.parent().find('span').text($(this).val())
 
+$('footer input').on 'change', $.throttle(500, true, ->
+	$this = $(this)
+	value = $(this).val()
+	$this.attr('data-last', value)
+	$this.parent().find('span').text(value)
+	_ <- render-input
+	)
 
 # draw it!
-render-input!
+_ <- render-input
