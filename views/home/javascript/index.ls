@@ -88,30 +88,32 @@ render = (sampleSize, repeats, numberOfBins, xMax, callback = $.noop) ->
 
 
 	# mu line
-	$svg.select('g.mu').attr('transform', "translate(#{x(conversionRate)}, #{-margin.top})")
-	$svg.select('g.ciRight').attr('transform', "translate(#{x((conversionRate + ci))}, #{-margin.top})")
-	$svg.select('g.ciLeft').attr('transform', "translate(#{x((conversionRate - ci))}, #{-margin.top})")
+	$svg.select 'g.mu' .attr 'transform', "translate(#{x(conversionRate)}, #{-margin.top})"
+	$svg.select 'g.ciRight' .attr 'transform', "translate(#{x((conversionRate + ci))}, #{-margin.top})"
+	$svg.select 'g.ciLeft' .attr 'transform', "translate(#{x((conversionRate - ci))}, #{-margin.top})"
 	
 
-	$bar = $bars.selectAll('.bar').data(data)
-	$barEnter = $bar.enter().append('g').attr('class', 'bar')
-	$bar.exit().remove()
-	$bar.transition().duration(500).attr('transform', -> "translate(#{x(it.x)}, #{y(it.y)})")
+	$bar = $bars.selectAll '.bar' .data data
+	$barEnter = $bar.enter! .append 'g' .attr 'class', 'bar'
+	$bar.exit! .remove!
+	$bar.transition! .duration 500 .attr 'transform', -> "translate(#{x(it.x)}, #{y(it.y)})"
 
-	$barEnter.append('rect')
-	$bar.select('rect')
-	.transition().duration(500)
-	.attr('x', 1)
-	.attr('width', x(data[0].dx)-1)
-	.attr('height', -> height - y(it.y))
+	$barEnter.append 'rect'
+	$bar.select 'rect'
+	.transition! .duration 500
+	.attr 'x', 1
+	.attr 'width', x(data[0].dx)-1
+	.attr 'height', -> height - y(it.y)
 
-	$barEnter.append('text').attr('dy', '.75em').attr('y', 6).attr("text-anchor", "middle")
-	$bar.select('text').attr('x', x(data[0].dx)/2).text(-> d3.format('%') it.y/repeats)
+	$barEnter.append 'text' .attr 'dy', '.75em' .attr 'y', 6 .attr "text-anchor", "middle"
+	$bar.select 'text' 
+	.attr 'x', x(data[0].dx)/2 
+	.text -> d3.format('%') it.y/repeats
 
 
 
-	xAxis = d3.svg.axis().scale(x).orient('bottom').tickFormat(d3.format '.2%')
-	$svg.selectAll('.x.axis').transition().duration(500).call(xAxis)
+	xAxis = d3.svg.axis! .scale x .orient 'bottom' .tickFormat d3.format '.2%'
+	$svg.selectAll '.x.axis' .transition! .duration 500 .call xAxis
 
 	yAxis = d3.svg.axis().scale(y).orient('left').tickFormat(-> (d3.format '%') (it/repeats))
 	$svg.selectAll('.y.axis').transition().duration(500).call(yAxis)
